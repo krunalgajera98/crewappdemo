@@ -1,0 +1,125 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+
+class CustomTextFormField extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obscureText;
+  final String? labelText;
+  final String? Function(String?)? validator;
+  final TextInputType? keyboardType;
+  final String? hintText;
+  final bool enable;
+  final List<TextInputFormatter>? inputFormatters;
+  final void Function()? onTap;
+  final FocusNode focusNode;
+  final int? maxLength;
+  final Color? backGroundColor;
+  late RxBool hasFocus;
+  final InputDecoration? decoration;
+  CustomTextFormField({
+    required this.controller,
+    this.obscureText = false,
+    this.validator,
+    this.keyboardType,
+    this.labelText,
+    this.enable = true,
+    this.inputFormatters,
+    this.maxLength,
+    this.hintText,
+    this.onTap,
+    this.decoration,
+    this.backGroundColor,
+    required this.focusNode,
+  }) {
+    hasFocus = (focusNode.hasFocus).obs;
+    focusNode.addListener(() {
+      hasFocus.value = focusNode.hasFocus;
+    });
+  }
+
+  final ValueNotifier<bool> _isObscure = ValueNotifier(true);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: _isObscure,
+      builder: (context, bool isObscure, _) {
+        if (!obscureText) {
+          isObscure = false;
+        }
+        return Obx(
+          () => Container(
+            decoration: BoxDecoration(
+              color: backGroundColor ?? Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: TextFormField(
+              maxLength: maxLength,
+              onTap: onTap,
+              keyboardType: keyboardType,
+              obscureText: isObscure,
+              inputFormatters: inputFormatters,
+              controller: controller,
+              focusNode: focusNode,
+              textInputAction: TextInputAction.next,
+              onEditingComplete: () {
+                focusNode.unfocus();
+              },
+              decoration: decoration ?? InputDecoration(
+                counterText: "",
+                contentPadding: EdgeInsets.all(20),
+                suffixIcon: obscureText
+                    ? IconButton(
+                        icon: Icon(
+                          isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          _isObscure.value = !isObscure;
+                        },
+                      )
+                    : null,
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: const BorderSide(
+                    color: Colors.black,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                ),
+                enabled: enable,
+                hintText: hintText,
+                fillColor: Colors.black,
+                labelText: labelText,
+                labelStyle: TextStyle(
+                  fontSize: 14,
+                  color: hasFocus.value ? Colors.black : Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Colors.black,
+                decoration: TextDecoration.none,
+              ),
+              cursorColor: Colors.black,
+              cursorWidth: 1,
+              validator: validator,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
