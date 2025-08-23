@@ -26,6 +26,19 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    GestureDetector(
+                      onTap: () {
+                        Get.toNamed(Routes.empDemo);
+                      },
+                      child: Text(
+                        'EMP DEMO',
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue[900],
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
                     Text(
                       AppString.wlcMsg,
                       style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
